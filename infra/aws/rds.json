@@ -1,0 +1,27 @@
+{
+  "_comment": "AWS RDS PostgreSQL configuration template. Use with AWS CLI or CloudFormation.",
+  "engine": "postgres",
+  "engineVersion": "16.4",
+  "instanceClass": "db.t3.small",
+  "allocatedStorage": 20,
+  "maxAllocatedStorage": 100,
+  "storageType": "gp3",
+  "dbName": "project_clarity",
+  "masterUsername": "clarity_admin",
+  "port": 5432,
+  "multiAZ": false,
+  "publiclyAccessible": false,
+  "storageEncrypted": true,
+  "backupRetentionPeriod": 7,
+  "preferredBackupWindow": "03:00-04:00",
+  "preferredMaintenanceWindow": "sun:05:00-sun:06:00",
+  "deletionProtection": true,
+  "autoMinorVersionUpgrade": true,
+  "vpcSecurityGroupIds": ["<SECURITY_GROUP_ID>"],
+  "dbSubnetGroupName": "<SUBNET_GROUP_NAME>",
+  "tags": [
+    { "Key": "Project", "Value": "ProjectClarity" },
+    { "Key": "Environment", "Value": "production" }
+  ],
+  "_estimatedMonthlyCost": "$30-60 for db.t3.small"
+}

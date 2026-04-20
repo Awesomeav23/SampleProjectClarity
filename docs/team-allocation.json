@@ -1,0 +1,103 @@
+{
+  "_description": "Dev team allocation for Project Clarity Phase 1 (Apr-Jun 2026). Defines who owns what component.",
+  "team": {
+    "totalHeadcount": 6,
+    "methodology": "Agile Scrum — 2-week sprints",
+    "sprintCadence": "Monday start, Friday demo",
+    "dailyStandup": "10:00 AM EST / 7:30 PM IST"
+  },
+  "members": [
+    {
+      "id": "DEV-001",
+      "name": "Tech Lead / Architect",
+      "location": "US",
+      "allocation": "100%",
+      "responsibilities": [
+        "System architecture and data model design",
+        "Code reviews and technical decisions",
+        "AWS infrastructure setup",
+        "Integration architecture (JobDiva, DocuSign, SharePoint)"
+      ],
+      "owns": ["Data Architecture", "Integration Layer", "DevOps/Infra"]
+    },
+    {
+      "id": "DEV-002",
+      "name": "Backend Developer 1",
+      "location": "India-Pune",
+      "allocation": "100%",
+      "responsibilities": [
+        "SOW Creation Engine API",
+        "SOW template engine and document generation",
+        "Approval workflow (BullMQ queues)",
+        "Margin calculation engine"
+      ],
+      "owns": ["SOW Management System", "Change Order Workflow"]
+    },
+    {
+      "id": "DEV-003",
+      "name": "Backend Developer 2",
+      "location": "India-Pune",
+      "allocation": "100%",
+      "responsibilities": [
+        "Resource Planning API",
+        "Capacity calculation engine",
+        "Burnt report automation",
+        "Timesheet sync from JobDiva"
+      ],
+      "owns": ["Resource Planning Engine", "Burnt Report Automation", "Capacity Engine"]
+    },
+    {
+      "id": "DEV-004",
+      "name": "Frontend Developer 1",
+      "location": "India-Mohali",
+      "allocation": "100%",
+      "responsibilities": [
+        "SOW creation wizard UI",
+        "SOW approval dashboard",
+        "Change order form",
+        "Document viewer/download"
+      ],
+      "owns": ["SOW Frontend", "Change Order Frontend"]
+    },
+    {
+      "id": "DEV-005",
+      "name": "Frontend Developer 2",
+      "location": "India-Mohali",
+      "allocation": "100%",
+      "responsibilities": [
+        "Capacity dashboard (resource/project/practice views)",
+        "Burnt report dashboard with drill-down",
+        "Assignment form and audit trail",
+        "Recharts data visualizations"
+      ],
+      "owns": ["Capacity Dashboard", "Burnt Report Dashboard", "Assignment UI"]
+    },
+    {
+      "id": "DEV-006",
+      "name": "QA Engineer",
+      "location": "India-Pune",
+      "allocation": "100%",
+      "responsibilities": [
+        "API contract testing (Postman/Newman)",
+        "E2E testing with Playwright",
+        "Financial calculation validation (margin, FLC, variance)",
+        "Integration testing against mock services"
+      ],
+      "owns": ["Test Strategy", "QA Automation"]
+    }
+  ],
+  "stakeholderReviewers": [
+    { "name": "Sharad", "role": "PM", "reviews": "Assignment workflow, resource planning" },
+    { "name": "Sharath", "role": "Finance Head", "reviews": "SOW templates, creation workflow" },
+    { "name": "Madhup", "role": "Finance/Ops", "reviews": "Margin calculations, burnt reports" },
+    { "name": "Aishwarya", "role": "Finance/Ops", "reviews": "Approval workflows, financial dashboards" }
+  ],
+  "sprintSchedule": {
+    "sprint1": { "dates": "Apr 13 - Apr 24, 2026", "focus": "Data model, project setup, auth skeleton, master data APIs" },
+    "sprint2": { "dates": "Apr 27 - May 8, 2026", "focus": "SOW creation engine, template rendering, approval routing" },
+    "sprint3": { "dates": "May 11 - May 22, 2026", "focus": "Resource planning, capacity engine, assignment automation" },
+    "sprint4": { "dates": "May 25 - Jun 5, 2026", "focus": "Burnt reports, change orders, timesheet sync" },
+    "sprint5": { "dates": "Jun 8 - Jun 19, 2026", "focus": "Dashboards, DocuSign/SharePoint integration, polish" },
+    "sprint6": { "dates": "Jun 22 - Jun 30, 2026", "focus": "UAT, bug fixes, stakeholder sign-off, deployment prep" }
+  }
+}

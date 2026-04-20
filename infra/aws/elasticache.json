@@ -1,0 +1,21 @@
+{
+  "_comment": "AWS ElastiCache Redis configuration template. Used for BullMQ queues and caching.",
+  "engine": "redis",
+  "engineVersion": "7.1",
+  "cacheNodeType": "cache.t3.micro",
+  "numCacheNodes": 1,
+  "port": 6379,
+  "automaticFailoverEnabled": false,
+  "atRestEncryptionEnabled": true,
+  "transitEncryptionEnabled": true,
+  "snapshotRetentionLimit": 3,
+  "snapshotWindow": "04:00-05:00",
+  "preferredMaintenanceWindow": "sun:06:00-sun:07:00",
+  "cacheSubnetGroupName": "<SUBNET_GROUP_NAME>",
+  "securityGroupIds": ["<SECURITY_GROUP_ID>"],
+  "tags": [
+    { "Key": "Project", "Value": "ProjectClarity" },
+    { "Key": "Environment", "Value": "production" }
+  ],
+  "_estimatedMonthlyCost": "$15-25 for cache.t3.micro"
+}

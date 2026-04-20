@@ -1,0 +1,374 @@
+{
+  "_description": "UI wireframe specifications for Project Clarity Phase 1. Text-based specs to guide frontend development and stakeholder review before building.",
+  "screens": [
+    {
+      "id": "WF-001",
+      "name": "Login",
+      "route": "/login",
+      "persona": "All",
+      "layout": {
+        "type": "centered-card",
+        "elements": [
+          { "type": "logo", "content": "DynPro Project Clarity" },
+          { "type": "input", "label": "Email", "placeholder": "you@dynpro.com" },
+          { "type": "input", "label": "Password", "inputType": "password" },
+          { "type": "button", "label": "Sign In", "action": "POST /auth/login" },
+          { "type": "text", "content": "Sign in with your DynPro credentials" }
+        ]
+      }
+    },
+    {
+      "id": "WF-002",
+      "name": "Dashboard (Home)",
+      "route": "/",
+      "persona": "All (role-filtered)",
+      "layout": {
+        "type": "sidebar + main",
+        "sidebar": [
+          { "label": "Dashboard", "icon": "home", "route": "/" },
+          { "label": "SOWs", "icon": "document", "route": "/sows", "permission": "sow:read" },
+          { "label": "Resource Planning", "icon": "people", "route": "/resource-plans", "permission": "resource_plan:read" },
+          { "label": "Capacity", "icon": "chart-bar", "route": "/capacity", "permission": "capacity:read" },
+          { "label": "Assignments", "icon": "clipboard", "route": "/assignments", "permission": "assignment:read" },
+          { "label": "Burnt Reports", "icon": "chart-line", "route": "/burnt-reports", "permission": "burnt_report:read" },
+          { "label": "Change Orders", "icon": "refresh", "route": "/change-orders", "permission": "change_order:read" }
+        ],
+        "main": {
+          "sections": [
+            {
+              "title": "Key Metrics",
+              "type": "stat-cards-row",
+              "cards": [
+                { "label": "Active SOWs", "value": "dynamic", "color": "blue" },
+                { "label": "Active Resources", "value": "dynamic", "color": "green" },
+                { "label": "Avg Utilization", "value": "dynamic%", "color": "conditional" },
+                { "label": "Pipeline Value", "value": "$dynamic", "color": "purple" }
+              ]
+            },
+            {
+              "title": "Utilization Alerts",
+              "type": "alert-list",
+              "items": [
+                { "type": "warning", "template": "{name} is at {%} utilization across {n} projects" },
+                { "type": "info", "template": "{name} is on bench — available for assignment" }
+              ]
+            },
+            {
+              "title": "Pending Approvals",
+              "type": "table",
+              "columns": ["Type", "Title", "Submitted By", "Margin %", "Status", "Action"],
+              "permission": "sow:approve"
+            },
+            {
+              "title": "Recent Activity",
+              "type": "activity-feed",
+              "items": ["SOW created", "Assignment submitted", "Change order approved", "Timesheet synced"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "WF-003",
+      "name": "SOW Creation Wizard",
+      "route": "/sows/new",
+      "persona": "Finance Head (Sharath)",
+      "layout": {
+        "type": "multi-step-wizard",
+        "steps": [
+          {
+            "step": 1,
+            "title": "Customer Information",
+            "elements": [
+              { "type": "select", "label": "Customer", "source": "GET /customers", "onChange": "auto-populate MSA, payment terms, holiday calendar" },
+              { "type": "readonly", "label": "MSA", "autoPopulated": true },
+              { "type": "readonly", "label": "Payment Terms", "autoPopulated": true },
+              { "type": "input", "label": "Customer Contact Name", "autoPopulated": true },
+              { "type": "input", "label": "Customer Contact Email", "autoPopulated": true }
+            ]
+          },
+          {
+            "step": 2,
+            "title": "Engagement Overview",
+            "elements": [
+              { "type": "select", "label": "SOW Template", "options": ["Lean T&M", "Elaborate T&M", "Fixed Fee"], "onChange": "load template sections" },
+              { "type": "input", "label": "SOW Title" },
+              { "type": "textarea", "label": "Project Description", "conditionalOn": "template != lean_tm" },
+              { "type": "datepicker", "label": "Start Date" },
+              { "type": "datepicker", "label": "End Date" },
+              { "type": "select", "label": "Payment Terms" }
+            ]
+          },
+          {
+            "step": 3,
+            "title": "Scope of Work",
+            "elements": [
+              { "type": "textarea", "label": "Scope Overview" },
+              { "type": "textarea", "label": "In-Scope Deliverables" },
+              { "type": "textarea", "label": "Out-of-Scope Items" },
+              { "type": "textarea", "label": "Assumptions" },
+              { "type": "textarea", "label": "Dependencies", "required": false }
+            ]
+          },
+          {
+            "step": 4,
+            "title": "Resource Plan & Pricing",
+            "elements": [
+              {
+                "type": "dynamic-table",
+                "label": "Resource Lines",
+                "columns": ["Role", "Location", "Hours", "Bill Rate (auto)", "FLC (hidden)", "Line Revenue", "Line Margin %"],
+                "addRow": "Add Resource Line",
+                "notes": "Bill rate auto-suggested from role/location standard rates. FLC hidden from non-Finance roles."
+              },
+              { "type": "select", "label": "Holiday Calendar" },
+              { "type": "select", "label": "Primary Work Location" },
+              { "type": "calculated-display", "label": "Total Hours", "formula": "SUM(hours)" },
+              { "type": "calculated-display", "label": "Total SOW Value", "formula": "SUM(hours x billRate)", "format": "currency" },
+              {
+                "type": "margin-indicator",
+                "label": "Operating Margin",
+                "formula": "((revenue - cost) / revenue) x 100",
+                "thresholds": { "green": ">=40%", "yellow": "35-40%", "red": "<35%" },
+                "alert": "Margin below 40% triggers escalated approval"
+              }
+            ]
+          },
+          {
+            "step": 5,
+            "title": "Milestones (Fixed Fee only)",
+            "conditionalOn": "template == fixed_fee",
+            "elements": [
+              {
+                "type": "dynamic-table",
+                "label": "Milestones",
+                "columns": ["Milestone Name", "Deliverables", "Due Date", "Acceptance Criteria", "Payment Amount"],
+                "validation": "Total payment must equal Total SOW Value"
+              }
+            ]
+          },
+          {
+            "step": 6,
+            "title": "Governance & Terms",
+            "elements": [
+              { "type": "select", "label": "DynPro Project Manager", "source": "GET /resources?role=PM" },
+              { "type": "input", "label": "Customer Project Manager" },
+              { "type": "select", "label": "Status Reporting Frequency", "options": ["Weekly", "Bi-Weekly", "Monthly"] },
+              { "type": "readonly-section", "label": "Legal Clauses (auto-injected from MSA)", "expandable": true },
+              { "type": "alert-list", "label": "Clauses Requiring Manual Review", "style": "warning" }
+            ]
+          },
+          {
+            "step": 7,
+            "title": "Review & Submit",
+            "elements": [
+              { "type": "summary-card", "label": "SOW Summary", "sections": ["Customer", "Scope", "Resource Plan", "Financials", "Governance"] },
+              { "type": "margin-indicator", "label": "Final Operating Margin" },
+              { "type": "approval-route-preview", "label": "Approval Route", "description": "Shows who will approve based on margin %" },
+              { "type": "button-group", "buttons": ["Save as Draft", "Submit for Approval"] }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "WF-004",
+      "name": "SOW Approval Dashboard",
+      "route": "/sows/approvals",
+      "persona": "Finance/Ops (Madhup, Aishwarya), Executive (Shiv)",
+      "layout": {
+        "type": "table-with-detail-panel",
+        "table": {
+          "columns": ["SOW Title", "Customer", "Type", "Total Value", "Margin %", "Submitted By", "Date", "Status"],
+          "filters": ["Status", "Customer", "Margin Range"],
+          "sortable": true,
+          "rowClick": "open detail panel"
+        },
+        "detailPanel": {
+          "sections": [
+            { "title": "SOW Summary", "type": "key-value pairs" },
+            { "title": "Resource Plan", "type": "table" },
+            { "title": "Financial Summary", "type": "margin-breakdown" },
+            { "title": "Legal Clauses", "type": "expandable-list" },
+            { "title": "Actions", "type": "button-group", "buttons": ["Approve", "Reject with Comments", "Request Changes"] }
+          ]
+        }
+      }
+    },
+    {
+      "id": "WF-005",
+      "name": "Capacity Dashboard",
+      "route": "/capacity",
+      "persona": "PM (Sharad), Finance/Ops, Executive",
+      "layout": {
+        "type": "tabbed-dashboard",
+        "controls": {
+          "viewToggle": ["Resource View", "Project View", "Practice View"],
+          "timeframe": ["This Week", "Next 4 Weeks", "Quarter"],
+          "filters": ["Location", "Utilization Threshold (>100%, <60%)", "Practice"]
+        },
+        "tabs": [
+          {
+            "name": "Resource View",
+            "content": {
+              "type": "heatmap-table",
+              "rows": "Resources (sorted by utilization desc)",
+              "columns": "Weeks",
+              "cellValue": "Allocation %",
+              "colorCoding": { "red": ">100%", "yellow": "80-100%", "green": "<80%", "gray": "0% (bench)" },
+              "rowClick": "expand to show all project allocations for that resource"
+            }
+          },
+          {
+            "name": "Project View",
+            "content": {
+              "type": "table",
+              "rows": "Projects",
+              "columns": ["Project", "Customer", "Resources Assigned", "Total Allocation", "Start", "End", "Status"],
+              "rowClick": "expand to show resource breakdown"
+            }
+          },
+          {
+            "name": "Practice View",
+            "content": {
+              "type": "bar-chart + table",
+              "chart": "Stacked bar — capacity vs booked by practice",
+              "table": { "columns": ["Practice", "Headcount", "Avg Utilization", "Over-Allocated", "Under-Utilized"] }
+            }
+          }
+        ],
+        "alertsPanel": {
+          "position": "top",
+          "items": [
+            { "type": "danger", "template": "{count} resources over 100% utilization" },
+            { "type": "warning", "template": "{count} resources on bench (<10% utilization)" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "WF-006",
+      "name": "Assignment Form",
+      "route": "/assignments/new",
+      "persona": "PM (Sharad)",
+      "layout": {
+        "type": "form-with-sidebar",
+        "form": {
+          "elements": [
+            { "type": "select", "label": "Resource", "source": "GET /resources", "onChange": "show current utilization" },
+            { "type": "select", "label": "Project", "source": "GET /projects", "onChange": "show customer info" },
+            { "type": "datepicker", "label": "Start Date" },
+            { "type": "datepicker", "label": "End Date" },
+            { "type": "slider", "label": "Allocation %", "min": 10, "max": 100, "step": 10 },
+            { "type": "currency-input", "label": "Bill Rate", "autoSuggest": "from role/location standard rate" },
+            { "type": "input", "label": "Approver Email" },
+            { "type": "textarea", "label": "Notes", "required": false },
+            { "type": "button", "label": "Submit Assignment", "action": "POST /assignments" }
+          ]
+        },
+        "sidebar": {
+          "title": "Resource Snapshot",
+          "sections": [
+            { "label": "Current Utilization", "type": "progress-bar", "colorCoded": true },
+            { "label": "Active Projects", "type": "list" },
+            { "label": "Capacity Warning", "type": "alert", "condition": "utilization + newAllocation > 100%" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "WF-007",
+      "name": "Burnt Report Dashboard",
+      "route": "/burnt-reports",
+      "persona": "PM (Sharad), Finance/Ops (Madhup, Aishwarya)",
+      "layout": {
+        "type": "dashboard-with-drill-down",
+        "controls": {
+          "projectSelect": "Select project or 'All Projects'",
+          "periodSelect": "Date range picker"
+        },
+        "summary": {
+          "type": "stat-cards-row",
+          "cards": [
+            { "label": "Planned Hours", "value": "dynamic" },
+            { "label": "Actual Hours", "value": "dynamic" },
+            { "label": "Hours Variance", "value": "dynamic", "colorCoded": true },
+            { "label": "Planned Margin", "value": "dynamic%" },
+            { "label": "Actual Margin", "value": "dynamic%", "colorCoded": true },
+            { "label": "Overall Status", "value": "Green/Yellow/Red badge" }
+          ]
+        },
+        "mainTable": {
+          "title": "Per-Resource Breakdown",
+          "columns": [
+            "Resource", "Role",
+            "Planned Hours", "Actual Hours", "Hours Var", "Hours Var %",
+            "Planned Revenue", "Actual Revenue", "Revenue Var",
+            "Status"
+          ],
+          "colorCoding": { "green": "<5%", "yellow": "5-10%", "red": ">10%" },
+          "rowClick": "drill-down to weekly breakdown"
+        },
+        "charts": [
+          { "type": "line-chart", "title": "Planned vs Actual Hours (by week)", "series": ["Planned", "Actual"] },
+          { "type": "bar-chart", "title": "Margin Trend", "series": ["Planned Margin %", "Actual Margin %"] }
+        ],
+        "actions": [
+          { "label": "Export to Excel", "action": "GET /burnt-reports/{id}/export?format=xlsx" },
+          { "label": "Export to PDF", "action": "GET /burnt-reports/{id}/export?format=pdf" }
+        ]
+      }
+    },
+    {
+      "id": "WF-008",
+      "name": "Change Order Form",
+      "route": "/change-orders/new",
+      "persona": "PM (Sharad)",
+      "layout": {
+        "type": "form-with-preview",
+        "form": {
+          "elements": [
+            { "type": "select", "label": "SOW", "source": "GET /sows?status=active" },
+            { "type": "select", "label": "Change Type", "options": ["Timeline", "Resource", "Scope"] },
+            { "type": "textarea", "label": "Description" },
+            {
+              "type": "dynamic-table",
+              "label": "Additions",
+              "columns": ["Resource/Role", "Additional Hours", "Bill Rate", "Line Total"],
+              "addRow": "Add Addition Line"
+            },
+            {
+              "type": "dynamic-table",
+              "label": "Credits",
+              "columns": ["Resource/Role", "Credit Hours", "Bill Rate", "Line Total"],
+              "addRow": "Add Credit Line"
+            },
+            { "type": "button-group", "buttons": ["Save as Draft", "Submit for Approval"] }
+          ]
+        },
+        "preview": {
+          "title": "Financial Impact Preview",
+          "sections": [
+            { "label": "Additions Total", "format": "currency", "color": "red" },
+            { "label": "Credits Total", "format": "currency", "color": "green" },
+            { "label": "Net Impact", "format": "currency", "bold": true },
+            { "label": "Original SOW Value", "format": "currency" },
+            { "label": "Updated SOW Value", "format": "currency", "bold": true },
+            { "label": "Updated Margin %", "colorCoded": true },
+            { "label": "Approval Route", "type": "approval-chain-preview" }
+          ]
+        }
+      }
+    }
+  ],
+  "sharedComponents": [
+    { "name": "AppShell", "description": "Sidebar nav + top bar with user info, notifications bell, and role indicator" },
+    { "name": "DataTable", "description": "Reusable sortable, filterable table with pagination. Used across all list views." },
+    { "name": "MarginIndicator", "description": "Colored badge showing margin % with Green/Yellow/Red threshold coloring" },
+    { "name": "UtilizationBar", "description": "Progress bar showing resource utilization with color coding" },
+    { "name": "ApprovalChain", "description": "Visual chain showing approval steps, current step highlighted" },
+    { "name": "StatCard", "description": "Metric card with label, value, and optional trend arrow" },
+    { "name": "WizardStepper", "description": "Multi-step form navigation with step titles, current step indicator, and validation status" },
+    { "name": "AlertBanner", "description": "Top-of-page alert for capacity warnings, margin alerts, pending approvals" }
+  ]
+}

@@ -1,0 +1,376 @@
+{
+  "info": {
+    "name": "Project Clarity API",
+    "description": "API contract testing collection for Project Clarity Phase 1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000/api" },
+    { "key": "authToken", "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{authToken}}" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (mock)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": { "email": "sharad@dynpro.com", "password": "mock-password" }
+            },
+            "description": "Returns JWT token. In mock mode, any email from MOCK_USERS is accepted."
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "token": "eyJhbGciOiJSUzI1NiIs...",
+              "user": { "id": "U002", "email": "sharad@dynpro.com", "name": "Sharad", "role": "ROLE-PM" },
+              "expiresIn": "1h"
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": { "method": "GET", "url": "{{baseUrl}}/auth/me" },
+          "response": {
+            "status": 200,
+            "body": {
+              "id": "U002",
+              "email": "sharad@dynpro.com",
+              "name": "Sharad",
+              "roleId": "ROLE-PM",
+              "permissions": ["sow:read", "resource_plan:create", "assignment:create", "capacity:read"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "List Customers",
+          "request": { "method": "GET", "url": "{{baseUrl}}/customers" },
+          "response": {
+            "status": 200,
+            "body": [
+              { "id": "C001", "name": "SurveyMonkey", "industry": "Technology", "msaId": "MSA-001", "status": "active" }
+            ]
+          }
+        },
+        {
+          "name": "Get Customer by ID",
+          "request": { "method": "GET", "url": "{{baseUrl}}/customers/C001" },
+          "response": {
+            "status": 200,
+            "body": {
+              "id": "C001", "name": "SurveyMonkey", "industry": "Technology",
+              "msaId": "MSA-001", "primaryContactName": "Lisa Park",
+              "paymentTerms": "Net-30", "status": "active"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Resources",
+      "item": [
+        {
+          "name": "List Resources",
+          "request": { "method": "GET", "url": "{{baseUrl}}/resources" },
+          "response": {
+            "status": 200,
+            "body": [
+              { "id": "R001", "name": "Romy Sharma", "role": "Senior Developer", "location": "India - Pune", "status": "active" }
+            ]
+          }
+        },
+        {
+          "name": "Get Resource by ID",
+          "request": { "method": "GET", "url": "{{baseUrl}}/resources/R001" },
+          "response": {
+            "status": 200,
+            "body": {
+              "id": "R001", "name": "Romy Sharma", "roleId": "ROLE-002", "locationId": "LOC-IN-PUNE",
+              "skills": ["React", "Node.js", "TypeScript"], "status": "active"
+            }
+          }
+        },
+        {
+          "name": "Get Resource Capacity",
+          "request": { "method": "GET", "url": "{{baseUrl}}/resources/R001/capacity?weekStart=2026-04-13" },
+          "response": {
+            "status": 200,
+            "body": {
+              "resourceId": "R001", "weekStart": "2026-04-13",
+              "totalCapacity": 40, "booked": 40, "available": 0,
+              "utilizationPercent": 100, "status": "yellow",
+              "allocations": [
+                { "projectId": "P001", "projectName": "SurveyMonkey Integration", "allocationPercent": 100, "hours": 40 }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "SOWs",
+      "item": [
+        {
+          "name": "List SOW Templates",
+          "request": { "method": "GET", "url": "{{baseUrl}}/sow-templates" },
+          "response": {
+            "status": 200,
+            "body": [
+              { "id": "TPL-LEAN-TM", "type": "lean_tm", "name": "Lean Time & Material", "sectionCount": 6 },
+              { "id": "TPL-ELAB-TM", "type": "elaborate_tm", "name": "Elaborate Time & Material", "sectionCount": 8 },
+              { "id": "TPL-FIXED-FEE", "type": "fixed_fee", "name": "Fixed Fee", "sectionCount": 9 }
+            ]
+          }
+        },
+        {
+          "name": "Create SOW Draft",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sows",
+            "body": {
+              "mode": "raw",
+              "raw": {
+                "templateId": "TPL-ELAB-TM",
+                "customerId": "C001",
+                "title": "SurveyMonkey Phase 2 Analytics",
+                "startDate": "2026-07-01",
+                "endDate": "2026-12-31"
+              }
+            }
+          },
+          "response": {
+            "status": 201,
+            "body": {
+              "id": "SOW-006", "status": "draft", "templateId": "TPL-ELAB-TM",
+              "customerId": "C001", "msaId": "MSA-001",
+              "autoPopulated": { "paymentTerms": "Net-30", "holidayCalendar": "customer_specific" }
+            }
+          }
+        },
+        {
+          "name": "Calculate SOW Margin",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sows/SOW-006/calculate-margin",
+            "body": {
+              "mode": "raw",
+              "raw": {
+                "resourceLines": [
+                  { "roleId": "ROLE-002", "locationId": "LOC-IN-PUNE", "hours": 800, "billRate": 100 },
+                  { "roleId": "ROLE-004", "locationId": "LOC-IN-MOHALI", "hours": 400, "billRate": 70 }
+                ]
+              }
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "totalRevenue": 108000, "totalCost": 37200, "marginPercent": 65.6,
+              "approvalLevel": "Standard", "approvers": ["madhup@dynpro.com"],
+              "perResource": [
+                { "roleId": "ROLE-002", "revenue": 80000, "cost": 28000, "marginPercent": 65.0 },
+                { "roleId": "ROLE-004", "revenue": 28000, "cost": 9200, "marginPercent": 67.1 }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Submit SOW for Approval",
+          "request": { "method": "POST", "url": "{{baseUrl}}/sows/SOW-006/submit" },
+          "response": {
+            "status": 200,
+            "body": { "id": "SOW-006", "status": "pending_approval", "approvers": ["madhup@dynpro.com"], "approvalLevel": "Standard" }
+          }
+        },
+        {
+          "name": "Approve SOW",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sows/SOW-006/approve",
+            "body": { "mode": "raw", "raw": { "comments": "Approved. Good margin." } }
+          },
+          "response": {
+            "status": 200,
+            "body": { "id": "SOW-006", "status": "approved", "approvedBy": "madhup@dynpro.com", "approvedAt": "2026-04-17T14:00:00Z" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assignments",
+      "item": [
+        {
+          "name": "Create Assignment",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/assignments",
+            "body": {
+              "mode": "raw",
+              "raw": {
+                "resourceId": "R001", "projectId": "P001",
+                "startDate": "2026-04-20", "endDate": "2026-06-30",
+                "allocationPercent": 100, "billRate": 100,
+                "approverEmail": "marcus.johnson@dynpro.com"
+              }
+            }
+          },
+          "response": {
+            "status": 201,
+            "body": {
+              "id": "ASGN-001", "status": "submitted",
+              "jobDivaAssignmentId": "JD-A1B2C3D4",
+              "capacityWarning": null
+            }
+          }
+        },
+        {
+          "name": "List Assignments",
+          "request": { "method": "GET", "url": "{{baseUrl}}/assignments?projectId=P001" },
+          "response": {
+            "status": 200,
+            "body": [
+              {
+                "id": "ASGN-001", "resourceId": "R001", "resourceName": "Romy Sharma",
+                "projectId": "P001", "projectName": "SurveyMonkey Integration",
+                "allocationPercent": 100, "billRate": 100, "status": "submitted"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Capacity",
+      "item": [
+        {
+          "name": "Get Capacity Dashboard (Resource View)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/capacity?view=resource&weekStart=2026-04-13&weeks=4" },
+          "response": {
+            "status": 200,
+            "body": {
+              "view": "resource", "weekStart": "2026-04-13", "weeks": 4,
+              "resources": [
+                { "id": "R001", "name": "Romy Sharma", "utilization": 100, "status": "yellow" },
+                { "id": "R002", "name": "Alex Chen", "utilization": 75, "status": "green" },
+                { "id": "R012", "name": "Karen Mitchell", "utilization": 0, "status": "red" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Utilization Alerts",
+          "request": { "method": "GET", "url": "{{baseUrl}}/capacity/alerts" },
+          "response": {
+            "status": 200,
+            "body": {
+              "overAllocated": [{ "resourceId": "R002", "name": "Alex Chen", "utilization": 115, "projects": 2 }],
+              "underUtilized": [{ "resourceId": "R012", "name": "Karen Mitchell", "utilization": 0, "status": "bench" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Burnt Reports",
+      "item": [
+        {
+          "name": "Generate Burnt Report",
+          "request": { "method": "GET", "url": "{{baseUrl}}/burnt-reports/P001?periodStart=2026-04-01&periodEnd=2026-04-30" },
+          "response": {
+            "status": 200,
+            "body": {
+              "reportId": "BR-P001-2026-04-30", "projectName": "SurveyMonkey Integration",
+              "baseline": { "totalPlannedHours": 520, "totalPlannedRevenue": 48400, "plannedMarginPercent": 64.5 },
+              "actuals": { "totalActualHours": 508, "totalActualRevenue": 47280, "actualMarginPercent": 64.1 },
+              "variance": { "hoursVariancePercent": -2.3, "marginVariance": -0.4, "hoursStatus": "green" },
+              "overallStatus": "green"
+            }
+          }
+        },
+        {
+          "name": "List All Burnt Reports",
+          "request": { "method": "GET", "url": "{{baseUrl}}/burnt-reports?periodStart=2026-04-01&periodEnd=2026-04-30" },
+          "response": {
+            "status": 200,
+            "body": [
+              { "reportId": "BR-P001-2026-04-30", "projectName": "SurveyMonkey Integration", "overallStatus": "green" },
+              { "reportId": "BR-P002-2026-04-30", "projectName": "Acme CRM Migration", "overallStatus": "yellow" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Change Orders",
+      "item": [
+        {
+          "name": "Create Change Order",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/change-orders",
+            "body": {
+              "mode": "raw",
+              "raw": {
+                "sowId": "SOW-001",
+                "type": "timeline",
+                "description": "Timeline extension Mar 27 to Apr 10",
+                "additions": [{ "resourceId": "R005", "hours": 170, "billRate": 90 }],
+                "credits": [{ "resourceId": "R005", "hours": 65, "billRate": 80 }]
+              }
+            }
+          },
+          "response": {
+            "status": 201,
+            "body": {
+              "id": "CO-002", "sowId": "SOW-001",
+              "additionsTotal": 15300, "creditsTotal": 5200, "netImpact": 10100,
+              "updatedSOWValue": 295100, "status": "draft"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "MSAs",
+      "item": [
+        {
+          "name": "Get MSA by Customer",
+          "request": { "method": "GET", "url": "{{baseUrl}}/msas?customerId=C001" },
+          "response": {
+            "status": 200,
+            "body": {
+              "id": "MSA-001", "customerId": "C001", "status": "active",
+              "signedDate": "2024-06-15", "expirationDate": "2027-06-14",
+              "paymentTerms": "Net-30", "clauseCount": 8
+            }
+          }
+        },
+        {
+          "name": "Get Auto-Injectable Clauses",
+          "request": { "method": "GET", "url": "{{baseUrl}}/msas/MSA-001/clauses?templateType=elaborate_tm" },
+          "response": {
+            "status": 200,
+            "body": {
+              "autoInject": ["Termination for Convenience", "Confidentiality", "IP Ownership", "Change Request Process", "Insurance"],
+              "manualReview": ["Limitation of Liability", "Data Protection", "Indemnification"],
+              "blocked": []
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

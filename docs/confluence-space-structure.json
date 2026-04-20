@@ -1,0 +1,75 @@
+{
+  "_description": "Confluence space structure for Project Clarity design documentation.",
+  "space": {
+    "key": "PC",
+    "name": "Project Clarity",
+    "description": "Design docs, architecture decisions, and meeting notes for Project Clarity"
+  },
+  "pages": [
+    {
+      "title": "Project Clarity Home",
+      "children": [
+        {
+          "title": "Architecture",
+          "children": [
+            { "title": "System Architecture Overview", "template": "Diagram + description of all components and how they connect" },
+            { "title": "Data Model (ERD)", "template": "Entity-relationship diagram for PostgreSQL schema" },
+            { "title": "Integration Architecture", "template": "JobDiva, DocuSign, SharePoint — data flows, sync schedules, error handling" },
+            { "title": "Auth & Security Design", "template": "OAuth 2.0 flow, JWT structure, RBAC model, row-level security rules" },
+            { "title": "Infrastructure (AWS)", "template": "ECS, RDS, ElastiCache, networking, deployment pipeline" }
+          ]
+        },
+        {
+          "title": "Design Specs",
+          "children": [
+            { "title": "SOW Creation Engine", "template": "Template types, field sequences, auto-population logic, margin calculation, approval routing" },
+            { "title": "Resource Planning & Capacity", "template": "Baseline vs execution plans, weekly capacity formula, utilization alerts, dashboard views" },
+            { "title": "Burnt Report Automation", "template": "Baseline lock mechanism, variance calculations, color-coding, export formats" },
+            { "title": "Assignment Automation", "template": "Workflow steps, JobDiva API mapping, notification recipients, audit trail" },
+            { "title": "Change Order Management", "template": "Financial impact formula, approval thresholds, SOW value update logic" },
+            { "title": "Master Data Management", "template": "Entity definitions, sync schedules, data quality rules, stewardship" }
+          ]
+        },
+        {
+          "title": "API Documentation",
+          "children": [
+            { "title": "API Overview & Conventions", "template": "Base URL, auth headers, error format, pagination, versioning" },
+            { "title": "SOW APIs", "template": "Endpoints, request/response schemas, examples" },
+            { "title": "Resource & Capacity APIs", "template": "Endpoints, request/response schemas, examples" },
+            { "title": "Assignment APIs", "template": "Endpoints, request/response schemas, examples" },
+            { "title": "Burnt Report APIs", "template": "Endpoints, request/response schemas, examples" },
+            { "title": "Integration APIs (JobDiva, DocuSign, SharePoint)", "template": "Webhook handlers, sync endpoints" }
+          ]
+        },
+        {
+          "title": "UI/UX",
+          "children": [
+            { "title": "Wireframes", "template": "Low-fidelity wireframes for all major screens" },
+            { "title": "User Flows", "template": "Step-by-step user flows per persona" },
+            { "title": "Component Library", "template": "Shared React components, Tailwind design tokens" }
+          ]
+        },
+        {
+          "title": "Decision Log",
+          "template": "ADR (Architecture Decision Records) — one entry per major decision with context, options considered, and rationale",
+          "entries": [
+            { "id": "ADR-001", "title": "AWS over Azure", "date": "2026-04-10", "status": "Accepted" },
+            { "id": "ADR-002", "title": "BullMQ over Temporal.io", "date": "2026-04-10", "status": "Accepted" },
+            { "id": "ADR-003", "title": "New Relic over DataDog", "date": "2026-04-10", "status": "Accepted" },
+            { "id": "ADR-004", "title": "PostgreSQL as primary database", "date": "2026-04-10", "status": "Accepted" },
+            { "id": "ADR-005", "title": "React + Tailwind for frontend", "date": "2026-04-10", "status": "Accepted" },
+            { "id": "ADR-006", "title": "Mock-first development approach", "date": "2026-04-10", "status": "Accepted" }
+          ]
+        },
+        {
+          "title": "Meeting Notes",
+          "children": [
+            { "title": "Sprint Planning Notes", "template": "Per-sprint planning decisions and commitments" },
+            { "title": "Stakeholder Review Notes", "template": "Feedback from Sharad, Sharath, Madhup, Aishwarya" },
+            { "title": "Retrospective Notes", "template": "What went well, what to improve, action items" }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "_description": "Jira project configuration for Project Clarity Phase 1. Import epics and stories into Jira.",
+  "project": {
+    "key": "CLARITY",
+    "name": "Project Clarity",
+    "type": "Scrum",
+    "sprintDuration": "2 weeks",
+    "board": "Project Clarity Board"
+  },
+  "issueTypes": ["Epic", "Story", "Task", "Bug", "Spike"],
+  "priorities": ["Critical", "High", "Medium", "Low"],
+  "customFields": [
+    { "name": "Component", "type": "select", "options": ["SOW Engine", "Resource Planning", "Capacity Dashboard", "Burnt Reports", "Change Orders", "Integrations", "Auth/Security", "Infrastructure", "Frontend", "Data Model"] },
+    { "name": "Pain Point", "type": "text", "description": "Reference to business case pain point (e.g., 3.1)" },
+    { "name": "Stakeholder Reviewer", "type": "select", "options": ["Sharad", "Sharath", "Madhup", "Aishwarya", "Shiv"] }
+  ],
+  "epics": [
+    {
+      "key": "CLARITY-1",
+      "title": "Data Architecture & Schema",
+      "description": "PostgreSQL schema design, master data tables, migration scripts",
+      "sprint": "Sprint 1",
+      "stories": [
+        { "title": "Design PostgreSQL schema for all entities", "points": 8, "assignee": "DEV-001" },
+        { "title": "Create migration scripts for master data tables (resources, customers, roles, skills, locations)", "points": 5, "assignee": "DEV-001" },
+        { "title": "Create migration scripts for transactional tables (SOWs, assignments, timesheets, resource plans)", "points": 5, "assignee": "DEV-001" },
+        { "title": "Seed database with mock data from mockData.ts", "points": 3, "assignee": "DEV-002" },
+        { "title": "Set up database connection pooling and health checks", "points": 2, "assignee": "DEV-001" }
+      ]
+    },
+    {
+      "key": "CLARITY-2",
+      "title": "Auth & User Management",
+      "description": "OAuth 2.0 setup, JWT middleware, RBAC, row-level security",
+      "sprint": "Sprint 1",
+      "stories": [
+        { "title": "Implement JWT auth middleware", "points": 5, "assignee": "DEV-001" },
+        { "title": "Create RBAC permission checking middleware", "points": 5, "assignee": "DEV-001" },
+        { "title": "Implement row-level security filters for timesheets, assignments, SOWs", "points": 5, "assignee": "DEV-002" },
+        { "title": "Create mock auth provider for local dev (bypass real OAuth)", "points": 3, "assignee": "DEV-001" },
+        { "title": "Build login page and auth flow UI", "points": 5, "assignee": "DEV-004" }
+      ]
+    },
+    {
+      "key": "CLARITY-3",
+      "title": "Master Data Management APIs",
+      "description": "CRUD APIs for customers, resources, roles, skills, locations, calendars",
+      "sprint": "Sprint 1",
+      "stories": [
+        { "title": "Customer master API (list, get by ID, search)", "points": 3, "assignee": "DEV-002" },
+        { "title": "Resource/employee master API (list, get, filter by location/role)", "points": 3, "assignee": "DEV-003" },
+        { "title": "Role and rate card API (list roles, get standard rates by location)", "points": 3, "assignee": "DEV-002" },
+        { "title": "Skills taxonomy API (hierarchical: practice > sub-practice > competency > skill)", "points": 3, "assignee": "DEV-003" },
+        { "title": "Holiday calendar API (by location, by customer)", "points": 2, "assignee": "DEV-003" },
+        { "title": "MSA repository API (list, get by customer, get clauses)", "points": 3, "assignee": "DEV-002" }
+      ]
+    },
+    {
+      "key": "CLARITY-4",
+      "title": "SOW Creation Engine",
+      "description": "Template-based SOW creation with guided wizard, margin calculation, approval routing",
+      "sprint": "Sprint 2",
+      "stories": [
+        { "title": "SOW template API (list templates, get by type, get fields)", "points": 3, "assignee": "DEV-002" },
+        { "title": "SOW creation API (create draft, save progress, submit)", "points": 8, "assignee": "DEV-002" },
+        { "title": "Auto-populate fields from customer/MSA/opportunity selection", "points": 5, "assignee": "DEV-002" },
+        { "title": "Real-time margin calculation endpoint", "points": 5, "assignee": "DEV-002" },
+        { "title": "Approval routing logic (standard/escalated/SLT based on margin)", "points": 5, "assignee": "DEV-002" },
+        { "title": "SOW approval API (approve, reject with comments)", "points": 3, "assignee": "DEV-002" },
+        { "title": "SOW document generation (PDF/Word from template)", "points": 8, "assignee": "DEV-002" },
+        { "title": "SOW creation wizard UI (multi-step form)", "points": 13, "assignee": "DEV-004" },
+        { "title": "SOW approval dashboard UI", "points": 8, "assignee": "DEV-004" },
+        { "title": "Legal clause auto-injection with manual review flags", "points": 5, "assignee": "DEV-002" }
+      ]
+    },
+    {
+      "key": "CLARITY-5",
+      "title": "Resource Planning & Capacity Engine",
+      "description": "Baseline/execution plans, weekly capacity, utilization alerts",
+      "sprint": "Sprint 3",
+      "stories": [
+        { "title": "Resource plan API (create baseline, create execution, update)", "points": 8, "assignee": "DEV-003" },
+        { "title": "Baseline plan lock mechanism (immutable after SOW signing)", "points": 3, "assignee": "DEV-003" },
+        { "title": "Weekly capacity calculation engine", "points": 8, "assignee": "DEV-003" },
+        { "title": "Utilization alert engine (>100% over-allocation, <60% underutilization)", "points": 5, "assignee": "DEV-003" },
+        { "title": "Resource allocation API (assign resource to project, update %)", "points": 5, "assignee": "DEV-003" },
+        { "title": "Capacity dashboard UI (resource view, project view, practice view)", "points": 13, "assignee": "DEV-005" },
+        { "title": "Color-coded utilization display (Red >100%, Yellow 80-100%, Green <80%)", "points": 3, "assignee": "DEV-005" },
+        { "title": "Drill-down: click resource to see all project allocations by week", "points": 5, "assignee": "DEV-005" }
+      ]
+    },
+    {
+      "key": "CLARITY-6",
+      "title": "Assignment Automation",
+      "description": "Automated JobDiva assignment creation replacing manual email workflow",
+      "sprint": "Sprint 3",
+      "stories": [
+        { "title": "Assignment creation API with JobDiva integration", "points": 5, "assignee": "DEV-003" },
+        { "title": "Capacity validation at assignment time", "points": 3, "assignee": "DEV-003" },
+        { "title": "Bill rate validation against standard rates", "points": 2, "assignee": "DEV-003" },
+        { "title": "Assignment audit trail (DB logging)", "points": 3, "assignee": "DEV-003" },
+        { "title": "Back-office notification on assignment creation", "points": 3, "assignee": "DEV-003" },
+        { "title": "Assignment form UI", "points": 5, "assignee": "DEV-005" },
+        { "title": "Assignment history/audit trail UI", "points": 5, "assignee": "DEV-005" }
+      ]
+    },
+    {
+      "key": "CLARITY-7",
+      "title": "Burnt Report Automation",
+      "description": "Baseline vs actuals variance tracking with live timesheet data",
+      "sprint": "Sprint 4",
+      "stories": [
+        { "title": "Burnt report generation API (by project, by period)", "points": 8, "assignee": "DEV-003" },
+        { "title": "Variance calculation engine (hours, cost, margin)", "points": 5, "assignee": "DEV-003" },
+        { "title": "Timesheet sync from JobDiva (hourly via BullMQ)", "points": 5, "assignee": "DEV-003" },
+        { "title": "Margin erosion alert when variance >10%", "points": 3, "assignee": "DEV-003" },
+        { "title": "Burnt report dashboard UI with color-coded status", "points": 8, "assignee": "DEV-005" },
+        { "title": "Per-resource drill-down in burnt report", "points": 5, "assignee": "DEV-005" },
+        { "title": "Export burnt report to Excel/PDF", "points": 5, "assignee": "DEV-005" }
+      ]
+    },
+    {
+      "key": "CLARITY-8",
+      "title": "Change Order Management",
+      "description": "Change order creation, financial impact calculation, approval workflow",
+      "sprint": "Sprint 4",
+      "stories": [
+        { "title": "Change order API (create, calculate impact, submit for approval)", "points": 8, "assignee": "DEV-002" },
+        { "title": "Financial impact calculator (additions - credits = net impact)", "points": 5, "assignee": "DEV-002" },
+        { "title": "SOW value update automation after CO approval", "points": 3, "assignee": "DEV-002" },
+        { "title": "Change order approval routing (BullMQ)", "points": 3, "assignee": "DEV-002" },
+        { "title": "Change order form UI", "points": 8, "assignee": "DEV-004" },
+        { "title": "Change order history and tracking UI", "points": 5, "assignee": "DEV-004" }
+      ]
+    },
+    {
+      "key": "CLARITY-9",
+      "title": "Integration Layer",
+      "description": "DocuSign e-signature, SharePoint document storage, JobDiva data sync",
+      "sprint": "Sprint 5",
+      "stories": [
+        { "title": "DocuSign envelope creation for SOW signing", "points": 5, "assignee": "DEV-001" },
+        { "title": "DocuSign webhook handler for signature events", "points": 5, "assignee": "DEV-001" },
+        { "title": "SharePoint document upload after SOW generation", "points": 5, "assignee": "DEV-001" },
+        { "title": "SharePoint document retrieval and version history", "points": 3, "assignee": "DEV-001" },
+        { "title": "JobDiva nightly full data sync (employees, customers, opportunities)", "points": 5, "assignee": "DEV-001" },
+        { "title": "Integration health dashboard (sync status, error counts)", "points": 3, "assignee": "DEV-005" }
+      ]
+    },
+    {
+      "key": "CLARITY-10",
+      "title": "UAT & Deployment",
+      "description": "User acceptance testing, bug fixes, production deployment",
+      "sprint": "Sprint 6",
+      "stories": [
+        { "title": "UAT environment setup on AWS", "points": 5, "assignee": "DEV-001" },
+        { "title": "UAT test plan with stakeholders", "points": 3, "assignee": "DEV-006" },
+        { "title": "Bug fix sprint (buffer)", "points": 13, "assignee": "All" },
+        { "title": "Production deployment and smoke testing", "points": 5, "assignee": "DEV-001" },
+        { "title": "Stakeholder training sessions", "points": 3, "assignee": "DEV-001" }
+      ]
+    }
+  ]
+}
