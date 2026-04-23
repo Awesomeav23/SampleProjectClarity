@@ -12,7 +12,8 @@
     "migrate:rollback": "tsx node_modules/.bin/knex migrate:rollback --knexfile knexfile.ts",
     "seed": "tsx node_modules/.bin/knex seed:run --knexfile knexfile.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "smoke": "tsx scripts/smoke.ts"
   },
   "dependencies": {
     "bullmq": "^5.74.1",

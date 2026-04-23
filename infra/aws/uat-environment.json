@@ -1,0 +1,94 @@
+{
+  "_comment": "AWS UAT environment configuration — right-sized for stakeholder testing, not production traffic. Apply alongside ecs-task-definition.json, rds.json, elasticache.json with these overrides.",
+  "environment": "uat",
+  "region": "us-east-1",
+  "domain": "clarity-uat.dynpro.com",
+
+  "ecs": {
+    "cluster": "project-clarity-uat",
+    "service": "project-clarity-backend-uat",
+    "cpu": "256",
+    "memory": "512",
+    "desiredCount": 1,
+    "minCapacity": 1,
+    "maxCapacity": 2,
+    "deploymentConfiguration": {
+      "maximumPercent": 200,
+      "minimumHealthyPercent": 100,
+      "deploymentCircuitBreaker": { "enable": true, "rollback": true }
+    },
+    "environmentOverrides": [
+      { "name": "NODE_ENV", "value": "uat" },
+      { "name": "MOCK_MODE", "value": "true" },
+      { "name": "NEW_RELIC_APP_NAME", "value": "project-clarity-backend-uat" }
+    ]
+  },
+
+  "rds": {
+    "instanceClass": "db.t3.micro",
+    "allocatedStorage": 20,
+    "multiAZ": false,
+    "backupRetentionPeriod": 3,
+    "deletionProtection": false,
+    "dbName": "project_clarity_uat",
+    "masterUsername": "clarity_uat_admin",
+    "tags": [
+      { "Key": "Project", "Value": "ProjectClarity" },
+      { "Key": "Environment", "Value": "uat" }
+    ],
+    "_estimatedMonthlyCost": "$15-25 for db.t3.micro"
+  },
+
+  "elasticache": {
+    "cacheNodeType": "cache.t4g.micro",
+    "numCacheNodes": 1,
+    "engine": "redis",
+    "engineVersion": "7.1",
+    "_estimatedMonthlyCost": "$10-15 for cache.t4g.micro"
+  },
+
+  "alb": {
+    "scheme": "internet-facing",
+    "listenerPort": 443,
+    "targetPort": 4000,
+    "healthCheck": {
+      "path": "/health",
+      "intervalSeconds": 30,
+      "timeoutSeconds": 5,
+      "healthyThresholdCount": 2,
+      "unhealthyThresholdCount": 3
+    },
+    "certificateArn": "arn:aws:acm:us-east-1:<ACCOUNT_ID>:certificate/<UAT_CERT_ID>"
+  },
+
+  "secrets": {
+    "_comment": "UAT reuses mock-mode for external integrations; real secrets only populated when stakeholder review needs live SharePoint/DocuSign.",
+    "prefix": "project-clarity-uat/",
+    "required": ["database-url", "redis-host", "jwt-secret"],
+    "optional": [
+      "jobdiva-client-id",
+      "jobdiva-client-secret",
+      "docusign-integration-key",
+      "docusign-account-id",
+      "sharepoint-client-id",
+      "sharepoint-tenant-id"
+    ]
+  },
+
+  "cloudwatch": {
+    "logGroup": "/ecs/project-clarity-backend-uat",
+    "retentionDays": 14,
+    "alarms": [
+      { "name": "uat-5xx-spike", "metric": "HTTPCode_Target_5XX_Count", "threshold": 10, "period": 300 },
+      { "name": "uat-task-restart", "metric": "TaskStoppedReason", "threshold": 3, "period": 900 }
+    ]
+  },
+
+  "rollbackPolicy": {
+    "maxFailedChecks": 3,
+    "smokeTestCommand": "BASE_URL=https://clarity-uat.dynpro.com npm run smoke --workspace=backend",
+    "rollbackOnSmokeFailure": true
+  },
+
+  "_estimatedMonthlyCost": "$50-90 total for UAT environment (idle outside business hours)"
+}

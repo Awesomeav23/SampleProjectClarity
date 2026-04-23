@@ -1,0 +1,365 @@
+{
+  "_description": "User Acceptance Test plan for Project Clarity Phase 1. Structured by persona and feature so each stakeholder runs only their scenarios. Each scenario maps back to a CLARITY epic/pain point for traceability.",
+  "meta": {
+    "phase": "Phase 1",
+    "sprint": "Sprint 6",
+    "environment": "https://clarity-uat.dynpro.com",
+    "testWindow": "2026-05-25 → 2026-06-05",
+    "signOffRequired": ["Sharath", "Sharad", "Madhup", "Aishwarya", "Shiv"],
+    "exitCriteria": {
+      "criticalBugs": 0,
+      "highBugs": "<=2, with workarounds documented",
+      "mediumBugs": "<=10",
+      "goldenPathPassRate": ">=95%"
+    }
+  },
+
+  "testData": {
+    "loginUsers": [
+      { "email": "sharath@dynpro.com", "role": "Finance Head" },
+      { "email": "sharad@dynpro.com", "role": "Project Manager" },
+      { "email": "madhup@dynpro.com", "role": "Finance/Operations" },
+      { "email": "shiv@dynpro.com", "role": "Executive Leadership" },
+      { "email": "admin@dynpro.com", "role": "System Administrator" }
+    ],
+    "note": "Mock auth accepts any password. For live-mode UAT with real OAuth, stakeholders use their DynPro SSO credentials."
+  },
+
+  "suites": [
+    {
+      "id": "UAT-SOW",
+      "title": "SOW Creation & Approval",
+      "epic": "CLARITY-4",
+      "painPoints": ["3.1"],
+      "owner": "Sharath",
+      "scenarios": [
+        {
+          "id": "UAT-SOW-01",
+          "title": "Create Lean T&M SOW — golden path",
+          "role": "Finance Head",
+          "steps": [
+            "Login as sharath@dynpro.com",
+            "Navigate to SOWs → New",
+            "Select customer SurveyMonkey, MSA auto-populates",
+            "Choose Lean T&M template",
+            "Fill Scope, ResourcePlan, Milestones, Governance",
+            "Review step shows projected margin ≥ 35%",
+            "Submit for approval"
+          ],
+          "expected": "SOW created in 'pending_approval', routed to standard approval chain (margin ≥ 35%). Audit trail records creation.",
+          "priority": "critical"
+        },
+        {
+          "id": "UAT-SOW-02",
+          "title": "Low-margin SOW escalates to SLT",
+          "role": "Finance Head",
+          "steps": [
+            "Create SOW with configured rates producing margin 18%",
+            "Submit for approval"
+          ],
+          "expected": "Approval routing resolves to SLT chain (Shiv). Warning banner visible in wizard Review step.",
+          "priority": "critical"
+        },
+        {
+          "id": "UAT-SOW-03",
+          "title": "Approver rejects SOW with comments",
+          "role": "Finance/Operations",
+          "steps": [
+            "Login as madhup@dynpro.com",
+            "Open SOW Approvals",
+            "Open a pending SOW, click Reject, enter comment 'Rate card not aligned'",
+            "Submit"
+          ],
+          "expected": "SOW status → 'rejected'. Finance Head sees rejection reason on next refresh.",
+          "priority": "high"
+        },
+        {
+          "id": "UAT-SOW-04",
+          "title": "Legal clauses auto-injected and flagged",
+          "role": "Finance Head",
+          "steps": [
+            "Create an Elaborate T&M SOW against an MSA with non-standard IP clauses",
+            "Proceed to Review"
+          ],
+          "expected": "Auto-inject clauses listed. Any blocked/manual-review clauses surfaced with yellow/red badges.",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "id": "UAT-CAPACITY",
+      "title": "Capacity & Resource Planning",
+      "epic": "CLARITY-5",
+      "painPoints": ["3.2", "3.3"],
+      "owner": "Sharad",
+      "scenarios": [
+        {
+          "id": "UAT-CAP-01",
+          "title": "Resource view shows weekly utilization",
+          "role": "Project Manager",
+          "steps": [
+            "Login as sharad@dynpro.com",
+            "Navigate to Capacity → Resource View",
+            "Filter by practice=Engineering"
+          ],
+          "expected": "Resources listed with color-coded utilization (red >100%, yellow 80–100%, green <80%). Week headers scrollable.",
+          "priority": "critical"
+        },
+        {
+          "id": "UAT-CAP-02",
+          "title": "Click resource to see allocations by project",
+          "role": "Project Manager",
+          "steps": [
+            "From Resource View, click a resource row"
+          ],
+          "expected": "Drill-down shows all project allocations with % and start/end dates.",
+          "priority": "high"
+        },
+        {
+          "id": "UAT-CAP-03",
+          "title": "Over-allocation alert triggers",
+          "role": "Project Manager",
+          "steps": [
+            "Navigate to Assignments → New",
+            "Assign a resource currently at 90% to a new project at 30%",
+            "Submit"
+          ],
+          "expected": "Validation error: 'Assignment would exceed 100% for week W'. Record not created.",
+          "priority": "critical"
+        }
+      ]
+    },
+    {
+      "id": "UAT-BURNT",
+      "title": "Burnt Reports",
+      "epic": "CLARITY-7",
+      "painPoints": ["3.5"],
+      "owner": "Madhup",
+      "scenarios": [
+        {
+          "id": "UAT-BR-01",
+          "title": "Project burnt report renders variance vs baseline",
+          "role": "Finance/Operations",
+          "steps": [
+            "Navigate to Burnt Reports",
+            "Select an active project",
+            "Set period to current month"
+          ],
+          "expected": "Stat cards show planned vs actual hours, revenue, margin. Variance chart renders per resource.",
+          "priority": "critical"
+        },
+        {
+          "id": "UAT-BR-02",
+          "title": "Margin erosion >10% shows red status",
+          "role": "Finance/Operations",
+          "steps": [
+            "Open a project where actual margin is 7% below plan"
+          ],
+          "expected": "Overall status badge = red. Margin variance cell highlighted.",
+          "priority": "high"
+        },
+        {
+          "id": "UAT-BR-03",
+          "title": "Export to Excel",
+          "role": "Finance/Operations",
+          "steps": [
+            "Click Export Excel on a loaded report"
+          ],
+          "expected": "XLSX downloads with summary + per-resource breakdown sheets.",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "id": "UAT-CO",
+      "title": "Change Orders",
+      "epic": "CLARITY-8",
+      "painPoints": ["3.6"],
+      "owner": "Sharad",
+      "scenarios": [
+        {
+          "id": "UAT-CO-01",
+          "title": "Create additive change order",
+          "role": "Project Manager",
+          "steps": [
+            "Navigate to Change Orders → New",
+            "Pick parent SOW-001, type=scope-addition, value=$50,000",
+            "Submit"
+          ],
+          "expected": "Financial impact preview shows net +$50,000. CO routed for approval. SOW value unchanged until approval.",
+          "priority": "critical"
+        },
+        {
+          "id": "UAT-CO-02",
+          "title": "Approved CO updates parent SOW value",
+          "role": "Finance/Operations",
+          "steps": [
+            "Approve an in-flight CO"
+          ],
+          "expected": "Parent SOW total value reflects new amount. Audit entry recorded.",
+          "priority": "critical"
+        }
+      ]
+    },
+    {
+      "id": "UAT-ASSIGN",
+      "title": "Assignment Automation",
+      "epic": "CLARITY-6",
+      "painPoints": ["3.3"],
+      "owner": "Sharad",
+      "scenarios": [
+        {
+          "id": "UAT-ASSIGN-01",
+          "title": "Assignment creation triggers JobDiva record + notification",
+          "role": "Project Manager",
+          "steps": [
+            "Create a new assignment with valid capacity and standard bill rate",
+            "Submit"
+          ],
+          "expected": "Assignment appears in list. JobDiva mock log shows created record. Back-office email logged.",
+          "priority": "critical"
+        },
+        {
+          "id": "UAT-ASSIGN-02",
+          "title": "Bill rate below standard flagged",
+          "role": "Project Manager",
+          "steps": [
+            "Try to create assignment with rate 20% below role standard"
+          ],
+          "expected": "Warning surfaced; requires justification before submit.",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "id": "UAT-INTEG",
+      "title": "Integrations & Ops",
+      "epic": "CLARITY-9",
+      "owner": "System Administrator",
+      "scenarios": [
+        {
+          "id": "UAT-INTEG-01",
+          "title": "Integration health dashboard shows healthy stack",
+          "role": "System Administrator",
+          "steps": [
+            "Login as admin@dynpro.com",
+            "Navigate to Integrations"
+          ],
+          "expected": "Overall=healthy. JobDiva, DocuSign, SharePoint cards green with latency <2s. All 5 queues show completed>0 after activity.",
+          "priority": "critical"
+        },
+        {
+          "id": "UAT-INTEG-02",
+          "title": "SOW approval triggers DocuSign envelope",
+          "role": "Finance/Operations",
+          "steps": [
+            "Approve a SOW",
+            "Navigate to SOWs → selected SOW",
+            "Check /api/docusign/status/<envelopeId> via UI or API"
+          ],
+          "expected": "Envelope created. SharePoint document uploaded under /PMO/ProjectClarity/SOWs. SOW status reflects 'sent_for_signature'.",
+          "priority": "critical"
+        },
+        {
+          "id": "UAT-INTEG-03",
+          "title": "DocuSign webhook marks envelope complete",
+          "role": "System Administrator",
+          "steps": [
+            "POST /api/docusign/simulate/<envelopeId> with action=sign for each signer"
+          ],
+          "expected": "SOW status → 'signed'. Baseline plan locked. Signed document uploaded to /SOWs/Signed.",
+          "priority": "critical"
+        }
+      ]
+    },
+    {
+      "id": "UAT-LEADERSHIP",
+      "title": "Executive Dashboards",
+      "owner": "Shiv",
+      "scenarios": [
+        {
+          "id": "UAT-EXEC-01",
+          "title": "SLT sees portfolio margin view",
+          "role": "Executive Leadership",
+          "steps": [
+            "Login as shiv@dynpro.com",
+            "Open Dashboard"
+          ],
+          "expected": "Portfolio-level KPIs visible (total SOW value, active projects, margin variance). FLC values are visible (has flc:read).",
+          "priority": "high"
+        },
+        {
+          "id": "UAT-EXEC-02",
+          "title": "Low-margin SOW appears in SLT approval queue",
+          "role": "Executive Leadership",
+          "steps": [
+            "Navigate to SOW Approvals"
+          ],
+          "expected": "Only SOWs requiring SLT sign-off (margin < configured threshold) listed.",
+          "priority": "critical"
+        }
+      ]
+    },
+    {
+      "id": "UAT-SECURITY",
+      "title": "Security & RBAC",
+      "owner": "System Administrator",
+      "scenarios": [
+        {
+          "id": "UAT-SEC-01",
+          "title": "Sales role cannot see FLC or margin",
+          "role": "Sales",
+          "steps": [
+            "Login as a Sales role user",
+            "Open SOW list / Burnt Reports"
+          ],
+          "expected": "FLC and margin columns hidden or masked. API returns 403 for /api/burnt-reports.",
+          "priority": "critical"
+        },
+        {
+          "id": "UAT-SEC-02",
+          "title": "Integrations page hidden from non-admin",
+          "role": "Finance Head",
+          "steps": [
+            "Login as sharath@dynpro.com"
+          ],
+          "expected": "No 'Integrations' nav item. Direct GET /api/integration-health returns 403.",
+          "priority": "high"
+        },
+        {
+          "id": "UAT-SEC-03",
+          "title": "Row-level security — PM only sees own projects",
+          "role": "Project Manager",
+          "steps": [
+            "Login as sharad@dynpro.com",
+            "Open Capacity → Project View"
+          ],
+          "expected": "Only projects where Sharad is PM are visible.",
+          "priority": "critical"
+        }
+      ]
+    }
+  ],
+
+  "bugTriageProcess": {
+    "severityDefinitions": {
+      "critical": "Blocks a sign-off scenario or causes data loss",
+      "high": "Golden path works but is confusing or requires workaround",
+      "medium": "Edge case or cosmetic",
+      "low": "Nice-to-have"
+    },
+    "flow": [
+      "Stakeholder files bug via Jira with screenshot + UAT scenario ID",
+      "Daily triage at 09:30 ET — assigns severity and owner",
+      "Critical bugs blocking sign-off fixed within 24h; deployed to UAT after smoke test passes",
+      "Medium/low bugs tracked for post-launch sprint"
+    ]
+  },
+
+  "trainingSessions": [
+    { "audience": "Finance (Sharath, Madhup, Aishwarya)", "topic": "SOW wizard + approvals", "durationMinutes": 60, "scheduledFor": "2026-05-22" },
+    { "audience": "PMs (Sharad + team)", "topic": "Capacity dashboard + assignments + change orders", "durationMinutes": 90, "scheduledFor": "2026-05-23" },
+    { "audience": "Executive Leadership (Shiv)", "topic": "Dashboard + SLT approvals", "durationMinutes": 30, "scheduledFor": "2026-05-24" },
+    { "audience": "System Administrators", "topic": "Integration health + operations runbook", "durationMinutes": 60, "scheduledFor": "2026-05-24" }
+  ]
+}

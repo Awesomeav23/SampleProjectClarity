@@ -9,6 +9,7 @@ import {
   ClipboardList,
   LineChart,
   RefreshCw,
+  Activity,
   LogOut,
 } from 'lucide-react';
 import clsx from 'clsx';
@@ -27,6 +28,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Assignments', path: '/assignments', icon: <ClipboardList size={20} />, permission: 'assignment:read' },
   { label: 'Burnt Reports', path: '/burnt-reports', icon: <LineChart size={20} />, permission: 'burnt_report:read' },
   { label: 'Change Orders', path: '/change-orders', icon: <RefreshCw size={20} />, permission: 'change_order:read' },
+  { label: 'Integrations', path: '/integrations', icon: <Activity size={20} />, permission: 'admin:system_config' },
 ];
 
 function SidebarLink({ item }: { item: NavItem }) {

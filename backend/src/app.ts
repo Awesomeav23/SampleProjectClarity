@@ -19,6 +19,8 @@ import assignmentRouter from './routes/assignments.js';
 import burntReportRouter from './routes/burntReports.js';
 import changeOrderRouter from './routes/changeOrders.js';
 import docusignRouter from './routes/docusign.js';
+import sharepointRouter from './routes/sharepoint.js';
+import integrationHealthRouter from './routes/integrationHealth.js';
 
 const app = express();
 
@@ -49,6 +51,8 @@ app.use('/api/assignments', assignmentRouter);
 app.use('/api/burnt-reports', burntReportRouter);
 app.use('/api/change-orders', changeOrderRouter);
 app.use('/api/docusign', docusignRouter);
+app.use('/api/sharepoint', sharepointRouter);
+app.use('/api/integration-health', integrationHealthRouter);
 
 // ─── Error Handler (must be last) ──────────────────────────────────────────────
 app.use(errorHandler);

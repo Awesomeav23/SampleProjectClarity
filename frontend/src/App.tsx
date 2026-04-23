@@ -14,6 +14,7 @@ import AssignmentForm from './pages/assignments/AssignmentForm';
 import BurntReportDashboard from './pages/burntReports/BurntReportDashboard';
 import ChangeOrderList from './pages/changeOrders/ChangeOrderList';
 import ChangeOrderForm from './pages/changeOrders/ChangeOrderForm';
+import IntegrationHealth from './pages/integrations/IntegrationHealth';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,6 +57,7 @@ function AppRoutes() {
         <Route path="/burnt-reports" element={<BurntReportDashboard />} />
         <Route path="/change-orders" element={<ChangeOrderList />} />
         <Route path="/change-orders/new" element={<ChangeOrderForm />} />
+        <Route path="/integrations" element={<IntegrationHealth />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
