@@ -25,11 +25,6 @@ export default function AssignmentForm() {
     queryFn: async () => (await api.get('/resources')).data,
   });
 
-  const { data: projects = [] } = useQuery({
-    queryKey: ['projects-for-assignment'],
-    queryFn: async () => (await api.get('/customers')).data, // we'll use projects from capacity
-  });
-
   const { data: roles = [] } = useQuery({
     queryKey: ['roles'],
     queryFn: async () => (await api.get('/roles')).data,

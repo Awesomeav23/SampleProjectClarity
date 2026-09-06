@@ -9,7 +9,7 @@ interface Props {
   customerId: string;
 }
 
-export default function GovernanceStep({ formData, onChange, msaId, templateType, customerId }: Props) {
+export default function GovernanceStep({ formData, onChange, msaId, templateType }: Props) {
   const { data: resources = [] } = useQuery({
     queryKey: ['resources', 'pm'],
     queryFn: async () => {

@@ -21,7 +21,7 @@ export default function MarginTrendChart({ plannedMargin, actualMargin, projectN
           <YAxis tick={{ fontSize: 12 }} domain={[0, 100]} unit="%" />
           <Tooltip
             contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
-            formatter={(value: number) => [`${value}%`]}
+            formatter={(value) => [`${value}%`]}
           />
           <Legend />
           <ReferenceLine y={40} stroke="#ef4444" strokeDasharray="3 3" label={{ value: '40% threshold', position: 'right', fontSize: 10, fill: '#ef4444' }} />

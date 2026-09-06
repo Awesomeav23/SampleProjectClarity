@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import clsx from 'clsx';
 import UtilizationBar from '../../components/ui/UtilizationBar';
 
 interface ResourceCapacity {

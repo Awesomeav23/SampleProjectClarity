@@ -4,7 +4,6 @@ import { usePermission } from '../lib/permissions';
 import {
   LayoutDashboard,
   FileText,
-  Users,
   BarChart3,
   ClipboardList,
   LineChart,
