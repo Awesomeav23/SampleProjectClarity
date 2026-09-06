@@ -31,7 +31,7 @@ export default function VarianceChart({ data }: Props) {
           <YAxis tick={{ fontSize: 12 }} label={{ value: 'Hours', angle: -90, position: 'insideLeft', fontSize: 12 }} />
           <Tooltip
             contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
-            formatter={(value: number, name: string) => [value, name]}
+            formatter={(value, name) => [value, name]}
           />
           <Legend />
           <Bar dataKey="plannedHours" name="Planned" fill="#6366f1" radius={[4, 4, 0, 0]} maxBarSize={40} />

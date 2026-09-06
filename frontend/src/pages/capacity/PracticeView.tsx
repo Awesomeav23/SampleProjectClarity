@@ -25,7 +25,7 @@ export default function PracticeView({ data }: Props) {
             <XAxis dataKey="practice" tick={{ fontSize: 12 }} />
             <YAxis tick={{ fontSize: 12 }} domain={[0, 100]} unit="%" />
             <Tooltip
-              formatter={(value: number) => [`${value}%`, 'Avg Utilization']}
+              formatter={(value) => [`${value}%`, 'Avg Utilization']}
               contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
             />
             <Bar
